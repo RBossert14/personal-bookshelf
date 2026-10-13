@@ -27,11 +27,12 @@ export async function parseLibraryFile(file: File): Promise<Book[]> {
   try {
     data = JSON.parse(await file.text());
   } catch {
-    throw new Error("That file isn't valid JSON.");
+    throw new Error("Couldn't read that file. Choose a .json file exported from this bookshelf.");
   }
   const list = Array.isArray(data) ? data : (data as { books?: unknown })?.books;
-  if (!Array.isArray(list)) throw new Error("No books found in that file.");
+  const hint = "Choose a .json file exported from this bookshelf.";
+  if (!Array.isArray(list)) throw new Error(`No books found in that file. ${hint}`);
   const books = list.filter(isBook);
-  if (books.length === 0) throw new Error("No books found in that file.");
+  if (books.length === 0) throw new Error(`No books found in that file. ${hint}`);
   return books;
 }

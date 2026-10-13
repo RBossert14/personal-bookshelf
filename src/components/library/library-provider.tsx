@@ -58,7 +58,9 @@ export function LibraryProvider({
       if (attemptedCovers.current.has(entry)) continue;
       attemptedCovers.current.add(entry);
       const [id, url] = entry.split("|");
-      extractCoverColor(url).then((color) => color && updateBook(id, { spineColor: color }));
+      extractCoverColor(url).then((color) => {
+        if (color) void updateBook(id, { spineColor: color });
+      });
     }
   }, [missingKey, updateBook]);
 

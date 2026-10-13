@@ -36,15 +36,42 @@ export function spineHeight(title: string) {
   return 82 + (hash(title) % 17);
 }
 
+const PAPER_INK = "#FBF8EE";
+const DARK_INK = "#23343B";
+
+function channels(hex: string) {
+  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+}
+
 function luminance(hex: string) {
-  const [r, g, b] = [1, 3, 5].map((i) => {
-    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+  const [r, g, b] = channels(hex).map((value) => {
+    const c = value / 255;
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Picks paper-white or ink lettering, whichever reads better on the spine. */
-export function spineInk(background: string) {
-  return luminance(background) > 0.32 ? "#23343B" : "#FBF8EE";
+function contrast(a: string, b: string) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function darken(hex: string, amount: number) {
+  return `#${channels(hex)
+    .map((c) => Math.round(c * (1 - amount)).toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+/**
+ * The spine's cloth color and lettering color, guaranteed to reach 4.5:1.
+ * Mid-tone covers (where neither ink reads well) are darkened a little at a
+ * time until paper-white lettering passes.
+ */
+export function spinePalette(book: Pick<Book, "title" | "spineColor">) {
+  let background = spineColor(book);
+  if (contrast(background, DARK_INK) >= 4.5 && contrast(background, DARK_INK) > contrast(background, PAPER_INK)) {
+    return { background, ink: DARK_INK };
+  }
+  while (contrast(background, PAPER_INK) < 4.5) background = darken(background, 0.06);
+  return { background, ink: PAPER_INK };
 }

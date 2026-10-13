@@ -33,6 +33,9 @@ export function BookDetailDialog({ book, origin, genres, onClose }: BookDetailDi
       onOpenChange={(open) => !open && onClose()}
       title={shown?.title}
       description={shown && [`by ${shown.author}`, shown.year].filter(Boolean).join(", ")}
+      returnFocus={() =>
+        shown && document.querySelector<HTMLElement>(`[data-flip-id="${CSS.escape(shown.id)}"] button`)
+      }
       aside={shown && <AnimatedCover key={shown.id} book={shown} origin={origin} />}
     >
       {shown && <DetailBody key={shown.id} book={shown} genres={genres} onClose={onClose} />}

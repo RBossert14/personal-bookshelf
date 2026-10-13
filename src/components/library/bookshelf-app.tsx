@@ -1,7 +1,7 @@
 "use client";
 
 import { BookPlusIcon, PlusIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { AddBookDialog } from "@/components/add-book/add-book-dialog";
 import { BookDetailDialog } from "@/components/book/book-detail-dialog";
@@ -33,6 +33,12 @@ export function BookshelfApp() {
   const [sort, setSort] = useState<SortKey>("author");
   const [selected, setSelected] = useState<{ id: string; origin: DOMRect | null } | null>(null);
   const [adding, setAdding] = useState(false);
+  const addOpener = useRef<HTMLElement | null>(null);
+
+  const startAdding = () => {
+    addOpener.current = document.activeElement as HTMLElement | null;
+    setAdding(true);
+  };
 
   const library = useMemo(() => books ?? [], [books]);
   const genres = useMemo(() => uniqueValues(library, (b) => b.genre), [library]);
@@ -72,7 +78,7 @@ export function BookshelfApp() {
         </div>
         <div className="flex gap-2">
           <LibraryMenu />
-          <Button onClick={() => setAdding(true)}>
+          <Button onClick={startAdding}>
             <PlusIcon aria-hidden />
             Add book
           </Button>
@@ -89,18 +95,20 @@ export function BookshelfApp() {
           authors={authors}
         />
 
-        {isFiltering && visible.length === 0 && library.length > 0 && (
-          <p role="status" className="-mt-2 text-sm">
-            No books match.{" "}
-            <button
-              type="button"
-              className="font-medium underline underline-offset-4"
-              onClick={() => changeFilters(EMPTY_FILTERS)}
-            >
-              Clear search and filters
-            </button>
-          </p>
-        )}
+        <div role="status" className="empty:hidden -mt-2 text-sm">
+          {isFiltering && visible.length === 0 && library.length > 0 && (
+            <>
+              {filters.search.trim() ? `No books match “${filters.search.trim()}”. ` : "No books match these filters. "}
+              <button
+                type="button"
+                className="font-medium underline underline-offset-4"
+                onClick={() => changeFilters(EMPTY_FILTERS)}
+              >
+                Clear search and filters
+              </button>
+            </>
+          )}
+        </div>
 
         {!books ? (
           <BookcaseSkeleton />
@@ -116,7 +124,7 @@ export function BookshelfApp() {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={() => setAdding(true)}>
+              <Button onClick={startAdding}>
                 <PlusIcon aria-hidden />
                 Add book
               </Button>
@@ -140,7 +148,7 @@ export function BookshelfApp() {
         genres={genres}
         onClose={() => setSelected(null)}
       />
-      <AddBookDialog open={adding} onOpenChange={setAdding} genres={genres} />
+      <AddBookDialog open={adding} onOpenChange={setAdding} genres={genres} returnFocus={() => addOpener.current} />
     </div>
   );
 }

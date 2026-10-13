@@ -2,7 +2,7 @@
 
 import { forwardRef, useState } from "react";
 
-import { spineColor, spineInk } from "@/lib/books/spine";
+import { spinePalette } from "@/lib/books/spine";
 import type { Book } from "@/lib/books/types";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ type CoverBook = Pick<Book, "title" | "author" | "coverUrl" | "spineColor">;
 export const BookCover = forwardRef<HTMLDivElement, { book: CoverBook; className?: string }>(
   function BookCover({ book, className }, ref) {
     const [status, setStatus] = useState<"loading" | "loaded" | "failed">("loading");
-    const background = spineColor(book);
+    const { background, ink } = spinePalette(book);
     const showImage = book.coverUrl && status !== "failed";
 
     return (
@@ -25,12 +25,12 @@ export const BookCover = forwardRef<HTMLDivElement, { book: CoverBook; className
           "relative aspect-[2/3] overflow-hidden rounded-[3px_6px_6px_3px] shadow-[0_1px_2px_rgb(35_52_59/0.25),0_12px_28px_-8px_rgb(35_52_59/0.45)]",
           className,
         )}
-        style={{ backgroundColor: background, color: spineInk(background) }}
+        style={{ backgroundColor: background, color: ink }}
       >
         {status !== "loaded" && (
           <div className="absolute inset-0 flex flex-col justify-between p-3 text-left">
             <span className="font-serif text-base leading-tight text-balance">{book.title}</span>
-            <span className="text-xs opacity-80">{book.author}</span>
+            <span className="text-xs">{book.author}</span>
           </div>
         )}
         {showImage && (

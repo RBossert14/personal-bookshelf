@@ -4,7 +4,7 @@ import { useRef } from "react";
 
 import { describeRating } from "@/components/book/star-rating";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { spineColor, spineHeight, spineInk, spineWidth } from "@/lib/books/spine";
+import { spineHeight, spinePalette, spineWidth } from "@/lib/books/spine";
 import type { Book } from "@/lib/books/types";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 
@@ -25,8 +25,7 @@ function surname(author: string) {
 export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }: BookSpineProps) {
   const visual = useRef<HTMLSpanElement>(null);
   const wasPulled = useRef(false);
-  const color = spineColor(book);
-  const ink = spineInk(color);
+  const { background: color, ink } = spinePalette(book);
 
   // Slides the book back into its slot when the detail view closes.
   useGSAP(
@@ -85,7 +84,7 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
             onClick={open}
             onFocus={onFocus}
             style={{ height: `${spineHeight(book.title)}%` }}
-            className="group/spine relative w-full rounded-t-[3px] rounded-b-[2px] outline-none transition-transform duration-200 ease-out focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-marigold motion-safe:hover:-translate-y-2 motion-safe:focus-visible:-translate-y-2"
+            className="group/spine relative w-full rounded-t-[3px] rounded-b-[2px] outline-none transition-transform duration-200 ease-out focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-marigold motion-safe:hover:-translate-y-2 motion-safe:focus-visible:-translate-y-2"
           >
             <span
               ref={visual}
@@ -107,7 +106,7 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
               >
                 {book.title}
               </span>
-              <span aria-hidden className="spine-text mt-2 text-[10px] leading-none font-medium whitespace-nowrap opacity-75">
+              <span aria-hidden className="spine-text mt-2 text-[10px] leading-none font-medium whitespace-nowrap">
                 {surname(book.author)}
               </span>
             </span>

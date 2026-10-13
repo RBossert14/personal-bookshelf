@@ -90,7 +90,7 @@ export function Shelf({ id, label, books, pulledId, emptyText, onOpen }: ShelfPr
           className="absolute top-1/2 left-4 -translate-y-1/2 rounded-[3px] bg-sage px-2.5 py-0.5 text-xs font-medium text-paper shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_1px_1px_rgb(0_0_0/0.3)] sm:left-6"
         >
           {label}
-          <span className="ml-1.5 tabular-nums opacity-75">{books.length}</span>
+          <span className="ml-1.5 tabular-nums">{books.length}</span>
         </h2>
       </div>
     </section>

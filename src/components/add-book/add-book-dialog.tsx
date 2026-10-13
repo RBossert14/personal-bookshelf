@@ -16,9 +16,10 @@ interface AddBookDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   genres: string[];
+  returnFocus?: () => HTMLElement | null | undefined;
 }
 
-export function AddBookDialog({ open, onOpenChange, genres }: AddBookDialogProps) {
+export function AddBookDialog({ open, onOpenChange, genres, returnFocus }: AddBookDialogProps) {
   const { addBook } = useLibrary();
   const [draft, setDraft] = useState<BookFormValues | null>(null);
 
@@ -31,6 +32,7 @@ export function AddBookDialog({ open, onOpenChange, genres }: AddBookDialogProps
     <ResponsiveDialog
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
+      returnFocus={returnFocus}
       title={draft ? "Check the details" : "Add a book"}
       description={
         !draft
