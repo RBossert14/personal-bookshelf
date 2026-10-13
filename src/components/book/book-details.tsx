@@ -82,7 +82,7 @@ export function BookDetails({ book, onMove, onRate, onEdit, onDelete }: BookDeta
       <div className="flex flex-col gap-1.5">
         <h3 className="text-sm font-medium">My notes</h3>
         {book.notes ? (
-          <p className="rounded-md border border-border/70 bg-paper px-4 py-3 font-serif text-[0.95rem] leading-relaxed whitespace-pre-line">
+          <p className="rounded-md border border-border/70 bg-paper px-4 py-3 font-serif text-[0.95rem] leading-relaxed text-pretty break-words whitespace-pre-line">
             {book.notes}
           </p>
         ) : (

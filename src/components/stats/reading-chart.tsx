@@ -6,7 +6,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import type { MonthlyCount } from "@/lib/books/stats";
 
 const config = {
-  books: { label: "Books finished", color: "var(--sage)" },
+  books: { label: "Books finished", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
 export function ReadingChart({ data, animate }: { data: MonthlyCount[]; animate: boolean }) {

@@ -26,7 +26,7 @@ export function StatsPanel({ stats }: { stats: ReadingStats }) {
       className="reveal-on-scroll grid gap-8 rounded-lg border border-border/80 bg-paper p-5 shadow-[0_1px_0_rgb(255_255_255/0.6)_inset] sm:p-7 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
     >
       <div className="flex flex-col gap-5">
-        <h2 id="stats-heading" className="font-serif text-2xl">
+        <h2 id="stats-heading" className="font-serif text-2xl tracking-[-0.01em]">
           Reading in {stats.year}
         </h2>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-5">

@@ -10,9 +10,9 @@ const STARS = [1, 2, 3, 4, 5];
 function Star({ fill, className }: { fill: number; className?: string }) {
   return (
     <span className={cn("relative inline-block size-5 shrink-0", className)}>
-      <StarIcon className="absolute inset-0 size-full fill-transparent text-oak-deep/40" strokeWidth={1.5} />
+      <StarIcon className="absolute inset-0 size-full fill-transparent text-star-empty" strokeWidth={1.5} />
       <StarIcon
-        className="absolute inset-0 size-full fill-marigold text-[#c98a2b]"
+        className="absolute inset-0 size-full fill-star text-star-edge"
         strokeWidth={1.5}
         style={{ clipPath: `inset(0 ${100 - fill * 100}% 0 0)` }}
       />
@@ -26,16 +26,6 @@ function fillFor(star: number, value: number) {
 
 export function describeRating(value?: number) {
   return value ? `${value} out of 5 stars` : "Not rated";
-}
-
-export function StarRating({ value, className }: { value?: number; className?: string }) {
-  return (
-    <span role="img" aria-label={describeRating(value)} className={cn("inline-flex gap-0.5", className)}>
-      {STARS.map((star) => (
-        <Star key={star} fill={fillFor(star, value ?? 0)} />
-      ))}
-    </span>
-  );
 }
 
 /**

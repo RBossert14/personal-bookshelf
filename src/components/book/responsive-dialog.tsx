@@ -61,8 +61,8 @@ export function ResponsiveDialog({
           <DialogHeader className="flex-row items-end gap-5 text-left">
             {aside}
             <div className="flex min-w-0 flex-col gap-1.5">
-              <DialogTitle className="font-serif text-2xl leading-tight font-normal text-balance">{title}</DialogTitle>
-              <DialogDescription className="text-base">{description}</DialogDescription>
+              <DialogTitle className="font-serif text-2xl leading-tight font-normal tracking-[-0.01em] text-balance break-words">{title}</DialogTitle>
+              <DialogDescription className="text-base text-pretty">{description}</DialogDescription>
             </div>
           </DialogHeader>
           {children}
@@ -77,8 +77,8 @@ export function ResponsiveDialog({
         <SheetHeader className="flex-row items-end gap-4 px-0 pt-6 pb-0 text-left">
           {aside}
           <div className="flex min-w-0 flex-col gap-1 pr-8">
-            <SheetTitle className="font-serif text-xl leading-tight font-normal text-balance">{title}</SheetTitle>
-            <SheetDescription className="text-sm">{description}</SheetDescription>
+            <SheetTitle className="font-serif text-xl leading-tight font-normal text-balance break-words">{title}</SheetTitle>
+            <SheetDescription className="text-sm text-pretty">{description}</SheetDescription>
           </div>
         </SheetHeader>
         {children}

@@ -106,7 +106,7 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
               >
                 {book.title}
               </span>
-              <span aria-hidden className="spine-text mt-2 text-[10px] leading-none font-medium whitespace-nowrap">
+              <span aria-hidden className="spine-text mt-2 text-[11px] leading-none font-medium whitespace-nowrap">
                 {surname(book.author)}
               </span>
             </span>

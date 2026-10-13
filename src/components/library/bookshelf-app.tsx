@@ -70,7 +70,7 @@ export function BookshelfApp() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="font-serif text-4xl tracking-[-0.01em] sm:text-5xl">My bookshelf</h1>
-          <p className="text-muted-foreground" aria-live="polite">
+          <p className="text-pretty text-muted-foreground">
             {stats
               ? `${library.length} ${library.length === 1 ? "book" : "books"} on the shelves, ${stats.booksThisYear} finished so far this year.`
               : "Taking the books down from the attic…"}

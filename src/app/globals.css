@@ -21,6 +21,10 @@
   --color-oak-deep: var(--oak-deep);
   --color-backboard: var(--backboard);
   --color-backboard-deep: var(--backboard-deep);
+  --color-sunlight: var(--sunlight);
+  --color-star: var(--star);
+  --color-star-edge: var(--star-edge);
+  --color-star-empty: var(--star-empty);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -73,6 +77,12 @@
   --oak-deep: #8a5a2b;
   --backboard: #74492a;
   --backboard-deep: #5a361d;
+  --sunlight: #ffe7a8;
+
+  /* Rating stars */
+  --star: var(--marigold);
+  --star-edge: #b07a22;
+  --star-empty: #a88a63; /* 3:1 against paper, so empty stars still read */
 
   /* shadcn semantic tokens */
   --background: var(--limewash);
@@ -121,6 +131,10 @@
   }
   html {
     @apply font-sans;
+  }
+  :where(a, .underline) {
+    text-underline-position: from-font;
+    text-decoration-thickness: from-font;
   }
 }
 @layer components {
