@@ -2,6 +2,7 @@
 
 import { BookPlusIcon, PlusIcon } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { AddBookDialog } from "@/components/add-book/add-book-dialog";
 import { BookDetailDialog } from "@/components/book/book-detail-dialog";
@@ -13,22 +14,24 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import {
   countActiveFilters,
+  countValues,
   EMPTY_FILTERS,
   filterBooks,
   sortBooks,
-  uniqueValues,
   type LibraryFilters,
   type SortKey,
 } from "@/lib/books/query";
+import { shelvePatch } from "@/lib/books/shelving";
 import { getReadingStats } from "@/lib/books/stats";
-import { SHELF_STATUSES, type Book, type ShelfStatus } from "@/lib/books/types";
+import { SHELF_LABELS, SHELF_STATUSES, type Book, type ShelfStatus } from "@/lib/books/types";
 import { captureShelfLayout } from "@/lib/motion";
 
 import { useLibrary } from "./library-provider";
 import { LibraryMenu } from "./library-menu";
+import { ThemeToggle } from "./theme-toggle";
 
 export function BookshelfApp() {
-  const { books } = useLibrary();
+  const { books, updateBook } = useLibrary();
   const [filters, setFilters] = useState<LibraryFilters>(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortKey>("author");
   const [selected, setSelected] = useState<{ id: string; origin: DOMRect | null } | null>(null);
@@ -41,8 +44,9 @@ export function BookshelfApp() {
   };
 
   const library = useMemo(() => books ?? [], [books]);
-  const genres = useMemo(() => uniqueValues(library, (b) => b.genre), [library]);
-  const authors = useMemo(() => uniqueValues(library, (b) => b.author), [library]);
+  const genreCounts = useMemo(() => countValues(library, (b) => b.genre), [library]);
+  const authorCounts = useMemo(() => countValues(library, (b) => b.author), [library]);
+  const genres = useMemo(() => genreCounts.map((g) => g.value), [genreCounts]);
   // Stats depend on today's date, so they're only computed once the library has loaded in the browser.
   const stats = useMemo(() => (books ? getReadingStats(books) : null), [books]);
 
@@ -77,6 +81,7 @@ export function BookshelfApp() {
           </p>
         </div>
         <div className="flex gap-2">
+          <ThemeToggle />
           <LibraryMenu />
           <Button onClick={startAdding}>
             <PlusIcon aria-hidden />
@@ -91,8 +96,8 @@ export function BookshelfApp() {
           onFiltersChange={changeFilters}
           sort={sort}
           onSortChange={changeSort}
-          genres={genres}
-          authors={authors}
+          genres={genreCounts}
+          authors={authorCounts}
         />
 
         <div role="status" className="empty:hidden -mt-2 text-sm">
@@ -136,6 +141,10 @@ export function BookshelfApp() {
             pulledId={selected?.id ?? null}
             filtered={isFiltering}
             onOpen={(book, origin) => setSelected({ id: book.id, origin })}
+            onMove={async (book, status) => {
+              await updateBook(book.id, shelvePatch(status, book));
+              toast.success(`Moved ${book.title} to ${SHELF_LABELS[status]}`);
+            }}
           />
         )}
 

@@ -15,6 +15,8 @@ export interface Book {
   status: ShelfStatus;
   year?: number;
   pages?: number;
+  /** The page you're on, while the book is on the "Currently reading" shelf. */
+  currentPage?: number;
   genre?: string;
   coverUrl?: string;
   /** Hex color pulled from the cover. Falls back to a palette color when missing. */

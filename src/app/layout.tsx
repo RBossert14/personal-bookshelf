@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree, Young_Serif } from "next/font/google";
 
+import { ThemeProvider } from "next-themes";
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -22,15 +24,21 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#eef0e2",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#eef0e2" },
+    { media: "(prefers-color-scheme: dark)", color: "#161c1f" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${figtree.variable} ${youngSerif.variable} h-full antialiased`}>
+    // next-themes sets the theme class before React hydrates, so <html> differs from the server render.
+    <html lang="en" suppressHydrationWarning className={`${figtree.variable} ${youngSerif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
-        <Toaster theme="light" position="bottom-center" />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <TooltipProvider>{children}</TooltipProvider>
+          <Toaster position="bottom-center" />
+        </ThemeProvider>
       </body>
     </html>
   );

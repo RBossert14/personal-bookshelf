@@ -2,17 +2,20 @@
 
 import { useRef, useState } from "react";
 
-import type { Book } from "@/lib/books/types";
+import type { Book, ShelfStatus } from "@/lib/books/types";
 import { cn } from "@/lib/utils";
 
 import { BookSpine } from "./book-spine";
 
 interface ShelfProps {
   id: string;
+  status: ShelfStatus;
   label: string;
   books: Book[];
   pulledId: string | null;
   emptyText: string;
+  /** Rendered on the right of the shelf board, opposite the label. */
+  action?: React.ReactNode;
   onOpen: (book: Book, origin: DOMRect) => void;
 }
 
@@ -20,7 +23,7 @@ interface ShelfProps {
  * One shelf of the bookcase. Books use a roving tab stop: Tab lands on one
  * book per shelf, and the arrow keys, Home and End move along it.
  */
-export function Shelf({ id, label, books, pulledId, emptyText, onOpen }: ShelfProps) {
+export function Shelf({ id, status, label, books, pulledId, emptyText, action, onOpen }: ShelfProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const current = Math.min(activeIndex, Math.max(books.length - 1, 0));
@@ -49,7 +52,12 @@ export function Shelf({ id, label, books, pulledId, emptyText, onOpen }: ShelfPr
   const headingId = `${id}-heading`;
 
   return (
-    <section aria-labelledby={headingId} className="relative">
+    <section
+      aria-labelledby={headingId}
+      data-shelf={status}
+      // Lit up while a spine is dragged over it; see use-shelf-drag.ts.
+      className="relative transition-colors duration-150 data-[drop-target=true]:bg-[color-mix(in_oklab,var(--sunlight)_16%,transparent)]"
+    >
       <div className="relative">
         {books.length === 0 ? (
           <p className="flex h-[calc(9rem+0.75rem)] items-end px-4 pb-4 text-sm sm:px-6 text-oak-light italic sm:h-52">{emptyText}</p>
@@ -92,6 +100,7 @@ export function Shelf({ id, label, books, pulledId, emptyText, onOpen }: ShelfPr
           {label}
           <span className="ml-1.5 tabular-nums">{books.length}</span>
         </h2>
+        {action && <div className="absolute top-1/2 right-4 -translate-y-1/2 sm:right-6">{action}</div>}
       </div>
     </section>
   );

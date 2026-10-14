@@ -5,10 +5,20 @@ import { usePrefersReducedMotion } from "@/hooks/use-media-query";
 import type { ReadingStats } from "@/lib/books/stats";
 
 import { ReadingChart } from "./reading-chart";
+import { ReadingGoal } from "./reading-goal";
 
 const number = new Intl.NumberFormat();
 
-export function StatsPanel({ stats }: { stats: ReadingStats }) {
+/** `title` and `showGoal` let a shared shelf reuse the panel without the viewer's own goal. */
+export function StatsPanel({
+  stats,
+  title = `Reading in ${stats.year}`,
+  showGoal = true,
+}: {
+  stats: ReadingStats;
+  title?: string;
+  showGoal?: boolean;
+}) {
   const [ref, inView] = useInView<HTMLElement>();
   const reducedMotion = usePrefersReducedMotion();
 
@@ -23,12 +33,13 @@ export function StatsPanel({ stats }: { stats: ReadingStats }) {
       ref={ref}
       data-in-view={inView}
       aria-labelledby="stats-heading"
-      className="reveal-on-scroll grid gap-8 rounded-lg border border-border/80 bg-paper p-5 shadow-[0_1px_0_rgb(255_255_255/0.6)_inset] sm:p-7 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+      className="reveal-on-scroll grid gap-8 rounded-lg border border-border/80 bg-paper p-5 shadow-[0_1px_0_rgb(255_255_255/0.6)_inset] dark:shadow-none sm:p-7 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
     >
       <div className="flex flex-col gap-5">
         <h2 id="stats-heading" className="font-serif text-2xl tracking-[-0.01em]">
-          Reading in {stats.year}
+          {title}
         </h2>
+        {showGoal && <ReadingGoal year={stats.year} finished={stats.booksThisYear} />}
         <dl className="grid grid-cols-2 gap-x-6 gap-y-5">
           {tiles.map((tile) => (
             <div key={tile.label} className={tile.text ? "col-span-2 flex flex-col" : "flex flex-col"}>

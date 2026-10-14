@@ -43,7 +43,8 @@ export function BookDetailDialog({ book, origin, genres, onClose }: BookDetailDi
   );
 }
 
-function AnimatedCover({ book, origin }: { book: Book; origin: DOMRect | null }) {
+/** The cover, grown out of the spine that was pulled. Also used by the shared shelf's read-only view. */
+export function AnimatedCover({ book, origin }: { book: Book; origin: DOMRect | null }) {
   const cover = useRef<HTMLDivElement>(null);
 
   // FLIP from the spine's rectangle to the cover's resting place.
@@ -101,6 +102,7 @@ function DetailBody({ book, genres, onClose }: { book: Book; genres: string[]; o
       book={book}
       onMove={move}
       onRate={(rating) => updateBook(book.id, { rating })}
+      onProgress={(currentPage) => updateBook(book.id, { currentPage })}
       onEdit={() => setEditing(true)}
       onDelete={async () => {
         onClose();

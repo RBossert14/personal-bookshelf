@@ -28,6 +28,17 @@ export function describeRating(value?: number) {
   return value ? `${value} out of 5 stars` : "Not rated";
 }
 
+/** Read-only stars, for places the rating can't be changed. */
+export function StarRatingDisplay({ value }: { value?: number }) {
+  return (
+    <span role="img" aria-label={describeRating(value)} className="inline-flex items-center gap-0.5">
+      {STARS.map((star) => (
+        <Star key={star} fill={fillFor(star, value ?? 0)} className="size-4" />
+      ))}
+    </span>
+  );
+}
+
 /**
  * Half-star rating control. It behaves like a slider for keyboard and screen
  * reader users (arrow keys step by half a star) and like stars for pointers.

@@ -5,7 +5,7 @@ import { ArrowDownUpIcon, SearchIcon, XIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SORT_OPTIONS, type LibraryFilters, type SortKey } from "@/lib/books/query";
+import { SORT_OPTIONS, type LibraryFilters, type SortKey, type ValueCount } from "@/lib/books/query";
 
 import { FiltersPopover } from "./filters-popover";
 
@@ -14,8 +14,8 @@ interface LibraryToolbarProps {
   onFiltersChange: (filters: LibraryFilters) => void;
   sort: SortKey;
   onSortChange: (sort: SortKey) => void;
-  genres: string[];
-  authors: string[];
+  genres: ValueCount[];
+  authors: ValueCount[];
 }
 
 export function LibraryToolbar({ filters, onFiltersChange, sort, onSortChange, genres, authors }: LibraryToolbarProps) {

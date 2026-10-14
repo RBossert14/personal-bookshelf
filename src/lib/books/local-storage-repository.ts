@@ -1,3 +1,4 @@
+import { withFormattedGenre } from "./genre";
 import type { BookRepository } from "./repository";
 import { SEED_BOOKS } from "./seed";
 import type { Book, BookInput, BookPatch } from "./types";
@@ -12,7 +13,11 @@ function read(): Book[] {
   }
   try {
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Book[]) : [];
+    if (!Array.isArray(parsed)) return [];
+    // Libraries saved before genres were formatted get fixed up on load.
+    const books = (parsed as Book[]).map(withFormattedGenre);
+    if (books.some((book, i) => book !== parsed[i])) write(books);
+    return books;
   } catch {
     return [];
   }
@@ -34,7 +39,7 @@ export function createLocalStorageRepository(): BookRepository {
 
     async create(input: BookInput) {
       const book: Book = {
-        ...input,
+        ...withFormattedGenre(input),
         id: crypto.randomUUID(),
         createdAt: now(),
         updatedAt: now(),
@@ -47,7 +52,7 @@ export function createLocalStorageRepository(): BookRepository {
       const books = read();
       const index = books.findIndex((b) => b.id === id);
       if (index === -1) throw new Error(`No book with id ${id}`);
-      const updated: Book = { ...books[index], ...patch, updatedAt: now() };
+      const updated: Book = { ...books[index], ...withFormattedGenre(patch), updatedAt: now() };
       books[index] = updated;
       write(books);
       return updated;
@@ -57,7 +62,8 @@ export function createLocalStorageRepository(): BookRepository {
       write(read().filter((b) => b.id !== id));
     },
 
-    async replaceAll(books: Book[]) {
+    async replaceAll(next: Book[]) {
+      const books = next.map(withFormattedGenre);
       write(books);
       return books;
     },

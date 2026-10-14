@@ -39,22 +39,23 @@ export async function searchOpenLibrary(query: string, signal?: AbortSignal): Pr
 
 /** Open Library subjects are free-form, so map the common ones onto a short genre list. */
 const GENRE_KEYWORDS: [genre: string, keywords: string[]][] = [
-  ["Science fiction", ["science fiction", "science-fiction", "sci-fi"]],
+  ["Science Fiction", ["science fiction", "science-fiction", "sci-fi"]],
   ["Fantasy", ["fantasy", "magic", "dragons"]],
   ["Mystery", ["mystery", "detective", "crime"]],
   ["Thriller", ["thriller", "suspense"]],
   ["Horror", ["horror", "ghost"]],
   ["Romance", ["romance", "love stories"]],
-  ["Historical fiction", ["historical fiction"]],
+  ["Historical Fiction", ["historical fiction"]],
   ["Biography", ["biography", "autobiography", "memoir"]],
-  ["Nature writing", ["nature", "ecology", "botany"]],
+  ["Nature Writing", ["nature", "ecology", "botany"]],
   ["History", ["history"]],
   ["Poetry", ["poetry", "poems"]],
   ["Self-help", ["self-help", "self-actualization"]],
-  ["Literary fiction", ["literary fiction", "literature", "booker"]],
+  ["Literary Fiction", ["literary fiction", "literature", "booker"]],
 ];
 
-function guessGenre(subjects: string[]) {
+/** Maps free-form subjects, shelf names or tags onto the short genre list. Also used by CSV import. */
+export function guessGenre(subjects: string[]) {
   const haystack = subjects.slice(0, 25).join(" | ").toLowerCase();
   for (const [genre, keywords] of GENRE_KEYWORDS) {
     if (keywords.some((k) => haystack.includes(k))) return genre;

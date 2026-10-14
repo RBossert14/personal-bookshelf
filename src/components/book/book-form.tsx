@@ -13,7 +13,11 @@ import { BookCover } from "./book-cover";
 import { DatePicker } from "./date-picker";
 import { StarRatingInput } from "./star-rating";
 
-export type BookFormValues = Omit<BookInput, "year" | "pages"> & { year: string; pages: string };
+export type BookFormValues = Omit<BookInput, "year" | "pages" | "currentPage"> & {
+  year: string;
+  pages: string;
+  currentPage: string;
+};
 
 export function toFormValues(book: Partial<BookInput>): BookFormValues {
   return {
@@ -22,6 +26,7 @@ export function toFormValues(book: Partial<BookInput>): BookFormValues {
     status: book.status ?? "want",
     year: book.year?.toString() ?? "",
     pages: book.pages?.toString() ?? "",
+    currentPage: book.currentPage?.toString() ?? "",
     genre: book.genre ?? "",
     coverUrl: book.coverUrl ?? "",
     spineColor: book.spineColor,
@@ -42,6 +47,7 @@ function toInput(values: BookFormValues): BookInput {
     author: values.author.trim(),
     year: number(values.year),
     pages: number(values.pages),
+    currentPage: values.status === "reading" ? number(values.currentPage) : undefined,
     genre: text(values.genre),
     coverUrl: text(values.coverUrl),
     notes: text(values.notes),
@@ -51,7 +57,7 @@ function toInput(values: BookFormValues): BookInput {
   };
 }
 
-type Errors = Partial<Record<"title" | "author" | "year" | "pages" | "finishedAt", string>>;
+type Errors = Partial<Record<"title" | "author" | "year" | "pages" | "currentPage" | "finishedAt", string>>;
 
 function validate(values: BookFormValues): Errors {
   const errors: Errors = {};
@@ -59,6 +65,13 @@ function validate(values: BookFormValues): Errors {
   if (!values.author.trim()) errors.author = "Enter the author's name.";
   if (values.year && !/^-?\d{1,4}$/.test(values.year.trim())) errors.year = "Use a year like 1937.";
   if (values.pages && !(Number(values.pages) > 0)) errors.pages = "Use a whole number of pages.";
+  if (values.status === "reading" && values.currentPage.trim()) {
+    const page = Number(values.currentPage);
+    if (!Number.isInteger(page) || page < 0) errors.currentPage = "Use a page number like 120.";
+    else if (Number(values.pages) > 0 && page > Number(values.pages)) {
+      errors.currentPage = `The book has ${values.pages} pages.`;
+    }
+  }
   if (values.startedAt && values.finishedAt && values.finishedAt < values.startedAt) {
     errors.finishedAt = "The finish date is before the start date.";
   }
@@ -199,6 +212,18 @@ export function BookForm({ initial, genres, submitLabel, onSubmit, onCancel, can
                 aria-invalid={!!errors.finishedAt}
               />
               <FieldError>{errors.finishedAt}</FieldError>
+            </Field>
+          )}
+          {values.status === "reading" && (
+            <Field data-invalid={!!errors.currentPage}>
+              <FieldLabel htmlFor={`${id}-currentPage`}>Current page</FieldLabel>
+              <Input
+                {...field("currentPage")}
+                inputMode="numeric"
+                value={values.currentPage}
+                onChange={(e) => set("currentPage", e.target.value)}
+              />
+              <FieldError>{errors.currentPage}</FieldError>
             </Field>
           )}
         </FieldGroup>

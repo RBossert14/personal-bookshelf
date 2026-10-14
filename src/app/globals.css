@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Evening mode is a class set by next-themes, so it can differ from the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 @theme inline {
   --color-background: var(--background);
@@ -22,6 +25,7 @@
   --color-backboard: var(--backboard);
   --color-backboard-deep: var(--backboard-deep);
   --color-sunlight: var(--sunlight);
+  --color-moonlight: var(--moonlight);
   --color-star: var(--star);
   --color-star-edge: var(--star-edge);
   --color-star-empty: var(--star-empty);
@@ -78,6 +82,7 @@
   --backboard: #74492a;
   --backboard-deep: #5a361d;
   --sunlight: #ffe7a8;
+  --moonlight: #c3d3ea;
 
   /* Rating stars */
   --star: var(--marigold);
@@ -117,6 +122,35 @@
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+}
+
+/* Evening: the cottage after dark, lit by a reading lamp. */
+.dark {
+  --limewash: #161c1f;
+  --paper: #1f272a;
+  --ink: #ece4d2;
+  --sage: #8ea983;
+  --sage-deep: #a9c19e;
+  --oak: #8f6131;
+  --oak-light: #a77a43;
+  --oak-deep: #5c3a1b;
+  --backboard: #3a2414;
+  --backboard-deep: #24150b;
+  /* At night the warm light comes from a lamp, not the sun */
+  --sunlight: #ffb35c;
+
+  --star-edge: #c99234;
+  --star-empty: #8a7a62;
+
+  --primary: #b8475a;
+  --secondary: #2c3633;
+  --muted: #283133;
+  --muted-foreground: #a3ada6;
+  --accent: #3a3222;
+  --destructive: #e0705e;
+  --border: #333d3f;
+  --input: #45504f;
+  --ring: var(--sage);
 }
 
 @layer base {

@@ -1,3 +1,4 @@
+import { rainbowOrder } from "./spine";
 import type { Book } from "./types";
 
 export const SORT_OPTIONS = {
@@ -5,6 +6,7 @@ export const SORT_OPTIONS = {
   author: "Author",
   finished: "Date finished",
   rating: "Rating",
+  color: "Spine color",
 } as const;
 
 export type SortKey = keyof typeof SORT_OPTIONS;
@@ -65,14 +67,24 @@ export function sortBooks(books: Book[], key: SortKey) {
       return sorted.sort((a, b) => (b.finishedAt ?? "").localeCompare(a.finishedAt ?? ""));
     case "rating":
       return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    case "color":
+      return sorted.sort((a, b) => rainbowOrder(a) - rainbowOrder(b));
   }
 }
 
-export function uniqueValues(books: Book[], pick: (book: Book) => string | undefined) {
-  const values = new Set<string>();
+export interface ValueCount {
+  value: string;
+  count: number;
+}
+
+/** Each distinct value with how many books have it, sorted by value. */
+export function countValues(books: Book[], pick: (book: Book) => string | undefined): ValueCount[] {
+  const counts = new Map<string, number>();
   for (const book of books) {
     const value = pick(book);
-    if (value) values.add(value);
+    if (value) counts.set(value, (counts.get(value) ?? 0) + 1);
   }
-  return [...values].sort(collator.compare);
+  return [...counts]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => collator.compare(a.value, b.value));
 }

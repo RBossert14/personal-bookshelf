@@ -9,18 +9,20 @@ import { SHELF_LABELS, SHELF_STATUSES, type Book, type ShelfStatus } from "@/lib
 import { formatDay } from "@/lib/dates";
 
 import { DeleteBookButton } from "./delete-book-button";
+import { ReadingProgressInput } from "./reading-progress";
 import { StarRatingInput } from "./star-rating";
 
 interface BookDetailsProps {
   book: Book;
   onMove: (status: ShelfStatus) => void;
   onRate: (rating: number | undefined) => void;
+  onProgress: (page: number | undefined) => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
 /** Everything below the cover and title in the detail view. */
-export function BookDetails({ book, onMove, onRate, onEdit, onDelete }: BookDetailsProps) {
+export function BookDetails({ book, onMove, onRate, onProgress, onEdit, onDelete }: BookDetailsProps) {
   const facts = [book.year && `First published ${book.year}`, book.pages && `${book.pages} pages`].filter(Boolean);
 
   return (
@@ -61,6 +63,10 @@ export function BookDetails({ book, onMove, onRate, onEdit, onDelete }: BookDeta
           </div>
         )}
       </div>
+
+      {book.status === "reading" && (
+        <ReadingProgressInput book={book} onChange={onProgress} onFinish={() => onMove("read")} />
+      )}
 
       {(book.startedAt || book.finishedAt) && (
         <dl className="grid grid-cols-2 gap-4 text-sm">

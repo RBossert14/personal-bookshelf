@@ -4,6 +4,7 @@ import { useRef } from "react";
 
 import { describeRating } from "@/components/book/star-rating";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { readingProgress } from "@/lib/books/progress";
 import { spineHeight, spinePalette, spineWidth } from "@/lib/books/spine";
 import type { Book } from "@/lib/books/types";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
@@ -66,7 +67,9 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
       .add(() => onOpen(book, element.getBoundingClientRect()), 0.14);
   };
 
-  const label = `${book.title} by ${book.author}. ${describeRating(book.rating)}.`;
+  const progress = readingProgress(book);
+  const progressText = progress && (progress.percent !== undefined ? `${progress.percent}% read` : `On page ${progress.page}`);
+  const label = `${book.title} by ${book.author}. ${progressText ? `${progressText}. ` : ""}${describeRating(book.rating)}.`;
 
   return (
     <li
@@ -84,7 +87,7 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
             onClick={open}
             onFocus={onFocus}
             style={{ height: `${spineHeight(book.title)}%` }}
-            className="group/spine relative w-full rounded-t-[3px] rounded-b-[2px] outline-none transition-transform duration-200 ease-out focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-marigold motion-safe:hover:-translate-y-2 motion-safe:focus-visible:-translate-y-2"
+            className="group/spine relative w-full rounded-t-[3px] select-none [-webkit-touch-callout:none] rounded-b-[2px] outline-none transition-transform duration-200 ease-out focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-marigold motion-safe:hover:-translate-y-2 motion-safe:focus-visible:-translate-y-2"
           >
             <span
               ref={visual}
@@ -97,6 +100,14 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
                   "linear-gradient(90deg, rgb(0 0 0/0.22), rgb(255 255 255/0.14) 16%, rgb(255 255 255/0) 42%, rgb(0 0 0/0.14))",
               }}
             >
+              {/* A ribbon up the spine's edge that fills as you read */}
+              {progress?.percent !== undefined && (
+                <span
+                  aria-hidden
+                  className="absolute bottom-0 left-0 w-[3px] bg-marigold shadow-[1px_0_1px_rgb(0_0_0/0.3)] transition-[height] duration-500 ease-out"
+                  style={{ height: `${progress.percent}%` }}
+                />
+              )}
               {/* Foil bands near the head and tail, like a cloth binding */}
               <span aria-hidden className="absolute inset-x-1 top-1.5 h-[3px] border-y border-current opacity-30" />
               <span aria-hidden className="absolute inset-x-1 bottom-1 h-[3px] border-y border-current opacity-30" />
@@ -115,6 +126,7 @@ export function BookSpine({ book, pulled, tabIndex, onOpen, onFocus, buttonRef }
         <TooltipContent side="top">
           {book.title}
           <span className="opacity-70"> by {book.author}</span>
+          {progressText && <span className="block opacity-70">{progressText}</span>}
         </TooltipContent>
       </Tooltip>
     </li>

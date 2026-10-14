@@ -5,7 +5,9 @@ import { useLayoutEffect, useRef } from "react";
 import { SHELF_LABELS, SHELF_STATUSES, type Book, type ShelfStatus } from "@/lib/books/types";
 import { Flip, gsap, prefersReducedMotion, takeShelfLayout, useGSAP } from "@/lib/motion";
 
+import { PickNextRead } from "./pick-next-read";
 import { Shelf } from "./shelf";
+import { useShelfDrag } from "./use-shelf-drag";
 import { WindowLight } from "./window-light";
 
 const EMPTY_TEXT: Record<ShelfStatus, string> = {
@@ -19,6 +21,8 @@ interface BookcaseProps {
   pulledId: string | null;
   filtered: boolean;
   onOpen: (book: Book, origin: DOMRect) => void;
+  /** Called when a spine is dragged onto another shelf. Leave out for a read-only bookcase. */
+  onMove?: (book: Book, status: ShelfStatus) => void;
 }
 
 export function BookcaseFrame({ children }: { children: React.ReactNode }) {
@@ -32,8 +36,18 @@ export function BookcaseFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Bookcase({ shelves, pulledId, filtered, onOpen }: BookcaseProps) {
+export function Bookcase({ shelves, pulledId, filtered, onOpen, onMove }: BookcaseProps) {
   const root = useRef<HTMLDivElement>(null);
+
+  const readOnly = !onMove;
+  useShelfDrag(
+    root,
+    (bookId, status) => {
+      const book = SHELF_STATUSES.flatMap((s) => shelves[s]).find((b) => b.id === bookId);
+      if (book) onMove?.(book, status);
+    },
+    !readOnly,
+  );
 
   // One entrance: books are set down on their shelves, left to right.
   useGSAP(
@@ -58,6 +72,9 @@ export function Bookcase({ shelves, pulledId, filtered, onOpen }: BookcaseProps)
     if (!state || !root.current) return;
     Flip.from(state, {
       targets: root.current.querySelectorAll("[data-flip-id]"),
+      // Move spines with transforms only. Without this Flip tweens inline width/height,
+      // which overrides the spines' `height: var(--row)` and collapses every shelf mid-animation.
+      scale: true,
       duration: 0.5,
       ease: "power2.inOut",
       stagger: 0.01,
@@ -72,10 +89,12 @@ export function Bookcase({ shelves, pulledId, filtered, onOpen }: BookcaseProps)
           <Shelf
             key={status}
             id={`shelf-${status}`}
+            status={status}
             label={SHELF_LABELS[status]}
             books={shelves[status]}
             pulledId={pulledId}
             emptyText={filtered ? "No matches on this shelf." : EMPTY_TEXT[status]}
+            action={!readOnly && status === "want" && shelves.want.length > 0 && <PickNextRead books={shelves.want} />}
             onOpen={onOpen}
           />
         ))}

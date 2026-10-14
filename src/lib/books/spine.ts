@@ -63,6 +63,25 @@ function darken(hex: string, amount: number) {
 }
 
 /**
+ * Where a spine falls on a rainbow shelf: red through violet by hue, then the
+ * near-greys (blacks, creams, browns too dull to read as a color) from light to dark.
+ * Returns a single number to sort by.
+ */
+export function rainbowOrder(book: Pick<Book, "title" | "spineColor">) {
+  const [r, g, b] = channels(spineColor(book)).map((c) => c / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const lightness = (max + min) / 2;
+  const chroma = max - min;
+  if (chroma < 0.12) return 1000 + (1 - lightness) * 100;
+  let hue =
+    max === r ? ((g - b) / chroma + 6) % 6 : max === g ? (b - r) / chroma + 2 : (r - g) / chroma + 4;
+  hue *= 60;
+  // Pinks wrap around to sit beside the reds rather than after violet.
+  return hue >= 330 ? hue - 360 : hue;
+}
+
+/**
  * The spine's cloth color and lettering color, guaranteed to reach 4.5:1.
  * Mid-tone covers (where neither ink reads well) are darkened a little at a
  * time until paper-white lettering passes.

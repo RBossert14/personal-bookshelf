@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { countActiveFilters, EMPTY_FILTERS, type LibraryFilters } from "@/lib/books/query";
+import { countActiveFilters, EMPTY_FILTERS, type LibraryFilters, type ValueCount } from "@/lib/books/query";
 
 const RATING_STEPS = [
   { value: "0", label: "Any" },
@@ -22,8 +22,8 @@ const RATING_STEPS = [
 interface FiltersPopoverProps {
   filters: LibraryFilters;
   onChange: (filters: LibraryFilters) => void;
-  genres: string[];
-  authors: string[];
+  genres: ValueCount[];
+  authors: ValueCount[];
 }
 
 function toggle(list: string[], value: string, on: boolean) {
@@ -37,16 +37,17 @@ function CheckList({
   onToggle,
 }: {
   legend: string;
-  options: string[];
+  options: ValueCount[];
   selected: string[];
   onToggle: (value: string, on: boolean) => void;
 }) {
   return (
     <fieldset className="flex min-w-0 flex-col gap-2">
       <legend className="mb-2 text-sm font-medium">{legend}</legend>
-      <ScrollArea className="max-h-44">
+      {/* Cap the viewport, not the root: the viewport's height:100% can't resolve against a max-height. */}
+      <ScrollArea className="*:data-[slot=scroll-area-viewport]:max-h-44">
         <div className="flex flex-col gap-2 pr-3">
-          {options.map((option) => {
+          {options.map(({ value: option, count }) => {
             const id = `${legend}-${option}`.replace(/\s+/g, "-").toLowerCase();
             return (
               <div key={option} className="flex items-center gap-2">
@@ -57,6 +58,7 @@ function CheckList({
                 />
                 <Label htmlFor={id} className="font-normal">
                   {option}
+                  <span className="text-muted-foreground tabular-nums">({count})</span>
                 </Label>
               </div>
             );
@@ -84,7 +86,7 @@ export function FiltersPopover({ filters, onChange, genres, authors }: FiltersPo
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="flex w-[min(30rem,calc(100vw-2rem))] flex-col gap-4 p-4">
+      <PopoverContent align="end" className="flex max-h-(--radix-popover-content-available-height) w-[min(30rem,calc(100vw-2rem))] flex-col gap-4 overflow-y-auto overscroll-contain p-4">
         <div className="grid gap-5 sm:grid-cols-2">
           <CheckList
             legend="Genre"
